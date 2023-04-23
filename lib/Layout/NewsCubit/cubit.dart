@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:newsapp/Models/Business/businessscreen.dart';
 import 'package:newsapp/Layout/NewsCubit/States.dart';
-import 'package:newsapp/Models/Science/ScienceScreen.dart';
-import 'package:newsapp/Models/Settings/SettingScreen.dart';
-import 'package:newsapp/Models/Sport/SportScreen.dart';
+import 'package:newsapp/Modules/Business/businessscreen.dart';
+import 'package:newsapp/Modules/Science/ScienceScreen.dart';
+import 'package:newsapp/Modules/Settings/SettingScreen.dart';
+import 'package:newsapp/Modules/Sport/SportScreen.dart';
 import 'package:newsapp/Shared/Network/Local/cache_helper.dart';
 
 import '../../Shared/Network/Remote/diohelper.dart';
@@ -16,8 +16,9 @@ class NewsCubit extends Cubit<NewsStates> {
 
   void changeTheme() {
     isDark = !isDark;
-    CacheHelper.putData(key: 'isDark', value: isDark).then((value) {emit(ChangeThemeState());});
-    
+    CacheHelper.putData(key: 'isDark', value: isDark).then((value) {
+      emit(ChangeThemeState());
+    });
   }
 
   int currentindex = 0;
@@ -55,8 +56,6 @@ class NewsCubit extends Cubit<NewsStates> {
     const ScienceScreen(),
     const SettingsScreen()
   ];
-
-  //GET https://newsapi.org/v2/top-headlines?=de&category=business&apiKey=0afb829d6ccb4416affb8443bb3c0a20
 
   List<dynamic> business = [];
   void getBusiness() {
@@ -109,6 +108,22 @@ class NewsCubit extends Cubit<NewsStates> {
       emit(GetScienceSuccessState());
     }).catchError((error) {
       emit(GetScienceErrorState(error.toString()));
+    });
+  }
+
+  //https://newsapi.org/v2/everything?q=tesla&apiKey=0afb829d6ccb4416affb8443bb3c0a20
+  List<dynamic> search = [];
+  void getSearch(keywords) {
+    emit(GetSearchLoadingState());
+    DioHelper.getData(
+      url: 'v2/everything',
+      query: {'q': '$keywords', 'apikey': '0afb829d6ccb4416affb8443bb3c0a20'},
+    ).then((value) {
+      search = value.data['articles'];
+      print(search[0]);
+      emit(GetSearchSuccessState());
+    }).catchError((error) {
+      emit(GetSearchErrorState(error.toString()));
     });
   }
 }

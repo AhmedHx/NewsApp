@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,8 +25,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NewsCubit()..getBusiness(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => NewsCubit(),),
+        BlocProvider(create: (context) => NewsCubit()..getBusiness(),)
+      ],
       child: BlocConsumer<NewsCubit, NewsStates>(
         listener: (context, state) {},
         builder: (context, state) {
